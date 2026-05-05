@@ -54,3 +54,6 @@ venv/
 *.sqlite3
 *.db
 *.pid
+
+# User uploads
+uploads/

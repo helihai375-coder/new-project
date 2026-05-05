@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>文件上传</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="uploader" aria-labelledby="title">
+        <div class="heading">
+          <p class="eyebrow">Upload Center</p>
+          <h1 id="title">文件上传</h1>
+          <p class="summary">选择文件或拖放到这里，文件会保存到服务器的 uploads 目录。</p>
+        </div>
+
+        <form id="uploadForm" class="dropzone">
+          <input id="fileInput" name="files" type="file" multiple>
+          <div class="dropContent">
+            <div class="uploadIcon" aria-hidden="true">
+              <span></span>
+            </div>
+            <strong>拖放文件到这里</strong>
+            <p>或点击选择文件，单次最大 50MB。</p>
+          </div>
+        </form>
+
+        <div class="actions">
+          <button id="chooseButton" type="button">选择文件</button>
+          <button id="uploadButton" type="button" disabled>开始上传</button>
+        </div>
+
+        <div id="fileList" class="fileList" aria-live="polite"></div>
+        <div id="status" class="status" role="status"></div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
