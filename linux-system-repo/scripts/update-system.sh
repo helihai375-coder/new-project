@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Update common Debian/Ubuntu/Kali based Linux systems.
+# 更新常见的 Debian/Ubuntu/Kali 系 Linux 系统。
 
 set -euo pipefail
 
 if ! command -v apt >/dev/null 2>&1; then
-  echo "This script expects an apt-based Linux system."
+  echo "这个脚本适用于基于 apt 的 Linux 系统。"
   exit 1
 fi
 
@@ -12,5 +12,4 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt autoremove -y
 
-echo "System update completed."
-
+echo "系统更新完成。"

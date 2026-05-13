@@ -1,5 +1,5 @@
 [Unit]
-Description=Example Linux App Service
+Description=示例 Linux 应用服务
 After=network.target
 
 [Service]
@@ -13,4 +13,3 @@ Group=www-data
 
 [Install]
 WantedBy=multi-user.target
-

@@ -1,101 +1,100 @@
-# Common Linux Commands
+# 常用 Linux 命令
 
-## Files
+## 文件
 
-List files:
+列出文件：
 
 ```bash
 ls -la
 ```
 
-Find files:
+查找文件：
 
 ```bash
 find . -name "*.log"
 ```
 
-Search text:
+搜索文本：
 
 ```bash
 grep -R "error" /var/log
 ```
 
-Show disk usage:
+查看磁盘占用：
 
 ```bash
 df -h
 du -sh /path/to/folder
 ```
 
-## Processes
+## 进程
 
-Show processes:
+查看进程：
 
 ```bash
 ps aux
 ```
 
-Monitor system usage:
+实时监控系统使用情况：
 
 ```bash
 top
 ```
 
-Kill a process:
+结束一个进程：
 
 ```bash
 kill PID
 ```
 
-## Network
+## 网络
 
-Show IP addresses:
+查看 IP 地址：
 
 ```bash
 ip addr
 ```
 
-Show routes:
+查看路由：
 
 ```bash
 ip route
 ```
 
-Show listening ports:
+查看正在监听的端口：
 
 ```bash
 ss -tulpen
 ```
 
-Test connectivity:
+测试网络连通性：
 
 ```bash
 ping example.com
 ```
 
-## Services
+## 服务
 
-Check service status:
+查看服务状态：
 
 ```bash
 systemctl status service-name
 ```
 
-Start a service:
+启动服务：
 
 ```bash
 sudo systemctl start service-name
 ```
 
-Enable a service at boot:
+设置服务开机自启：
 
 ```bash
 sudo systemctl enable service-name
 ```
 
-Read logs:
+读取服务日志：
 
 ```bash
 journalctl -u service-name
 ```
-

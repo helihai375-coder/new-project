@@ -1,24 +1,24 @@
-# Code Library
+# 代码资料库
 
-This repository is a personal code library for storing useful code, notes, templates, and small projects.
+这个仓库用于保存常用代码、技术笔记、模板和小型项目。
 
-## Structure
+## 目录结构
 
-- `code-library/snippets/` - reusable small code examples.
-- `code-library/projects/` - larger examples or experiments.
-- `code-library/notes/` - technical notes and references.
-- `code-library/templates/` - starter files you can copy when creating new code.
-- `linux-system-repo/` - Linux system scripts, notes, service templates, and security examples.
-- `public/` and `server.js` - the existing local upload website.
+- `code-library/snippets/` - 可复用的小段代码示例。
+- `code-library/projects/` - 较完整的小项目或实验。
+- `code-library/notes/` - 技术笔记和参考资料。
+- `code-library/templates/` - 新建代码时可复制的起始模板。
+- `linux-system-repo/` - Linux 系统脚本、笔记、服务模板和安全示例。
+- `public/` 和 `server.js` - 已有的本地文件上传网站。
 
-## How To Save Code
+## 如何保存代码
 
-1. Pick the right folder.
-2. Create a short, descriptive filename.
-3. Add a comment at the top explaining what the code is for.
-4. If the code needs packages or setup steps, add those notes nearby.
+1. 选择合适的文件夹。
+2. 使用简短、清楚的文件名。
+3. 在代码顶部添加注释，说明代码用途。
+4. 如果代码需要依赖包或安装步骤，把说明写在旁边。
 
-Example filename ideas:
+文件名示例：
 
 - `snippets/javascript/read-json-file.js`
 - `snippets/python/download-image.py`

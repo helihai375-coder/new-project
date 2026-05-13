@@ -1,5 +1,5 @@
 [Unit]
-Description=Run example app task every hour
+Description=每小时运行一次示例应用任务
 
 [Timer]
 OnCalendar=hourly
@@ -7,4 +7,3 @@ Persistent=true
 
 [Install]
 WantedBy=timers.target
-

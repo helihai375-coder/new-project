@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Show useful Linux system information.
+# 显示常用 Linux 系统信息。
 
 set -euo pipefail
 
-echo "== Host =="
+echo "== 主机信息 =="
 hostnamectl || hostname
 
 echo
-echo "== Kernel =="
+echo "== 内核信息 =="
 uname -a
 
 echo
-echo "== Uptime =="
+echo "== 运行时间 =="
 uptime
 
 echo
@@ -19,14 +19,13 @@ echo "== CPU =="
 lscpu | sed -n '1,12p'
 
 echo
-echo "== Memory =="
+echo "== 内存信息 =="
 free -h
 
 echo
-echo "== Disk =="
+echo "== 磁盘信息 =="
 df -h
 
 echo
-echo "== Network Addresses =="
+echo "== 网络地址 =="
 ip addr show
-
