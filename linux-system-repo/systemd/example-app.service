@@ -1,0 +1,16 @@
+[Unit]
+Description=Example Linux App Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/example-app
+ExecStart=/usr/bin/bash /opt/example-app/start.sh
+Restart=on-failure
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
+

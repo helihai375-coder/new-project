@@ -8,6 +8,7 @@ This repository is a personal code library for storing useful code, notes, templ
 - `code-library/projects/` - larger examples or experiments.
 - `code-library/notes/` - technical notes and references.
 - `code-library/templates/` - starter files you can copy when creating new code.
+- `linux-system-repo/` - Linux system scripts, notes, service templates, and security examples.
 - `public/` and `server.js` - the existing local upload website.
 
 ## How To Save Code
@@ -23,4 +24,3 @@ Example filename ideas:
 - `snippets/python/download-image.py`
 - `notes/git-commands.md`
 - `projects/simple-api/README.md`
-
