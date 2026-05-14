@@ -1,8 +1,8 @@
 {
-  "name": "file-upload-site",
+  "name": "domain-intel-collector",
   "version": "1.0.0",
   "private": true,
-  "description": "A simple local website for uploading files.",
+  "description": "A local authorized domain, DNS, website, TLS, and limited port information collector.",
   "scripts": {
     "start": "node server.js"
   },
