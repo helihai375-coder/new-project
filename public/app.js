@@ -1,107 +1,169 @@
-const form = document.querySelector("#uploadForm");
-const fileInput = document.querySelector("#fileInput");
-const chooseButton = document.querySelector("#chooseButton");
-const uploadButton = document.querySelector("#uploadButton");
-const fileList = document.querySelector("#fileList");
+const form = document.querySelector("#collectForm");
+const targetInput = document.querySelector("#targetInput");
+const portsInput = document.querySelector("#portsInput");
+const collectButton = document.querySelector("#collectButton");
 const statusBox = document.querySelector("#status");
-
-let selectedFiles = [];
-
-function formatBytes(bytes) {
-  if (bytes === 0) return "0 B";
-
-  const units = ["B", "KB", "MB", "GB"];
-  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
-  const value = bytes / Math.pow(1024, index);
-
-  return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
-}
+const results = document.querySelector("#results");
+const resultTarget = document.querySelector("#resultTarget");
+const collectedAt = document.querySelector("#collectedAt");
+const dnsRecords = document.querySelector("#dnsRecords");
+const httpRecords = document.querySelector("#httpRecords");
+const tlsRecord = document.querySelector("#tlsRecord");
+const portRecords = document.querySelector("#portRecords");
 
 function setStatus(message, type = "") {
   statusBox.textContent = message;
   statusBox.className = `status ${type}`.trim();
 }
 
-function renderFiles() {
-  fileList.innerHTML = "";
-  uploadButton.disabled = selectedFiles.length === 0;
+function clearNode(node) {
+  node.replaceChildren();
+}
 
-  selectedFiles.forEach((file) => {
-    const item = document.createElement("div");
-    item.className = "fileItem";
+function appendEmpty(node, text) {
+  const empty = document.createElement("p");
+  empty.className = "empty";
+  empty.textContent = text;
+  node.append(empty);
+}
 
-    const name = document.createElement("div");
-    name.className = "fileName";
-    name.textContent = file.name;
+function renderKeyValues(node, entries) {
+  clearNode(node);
 
-    const size = document.createElement("div");
-    size.className = "fileSize";
-    size.textContent = formatBytes(file.size);
-
-    item.append(name, size);
-    fileList.append(item);
+  const visibleEntries = entries.filter(([, value]) => {
+    if (Array.isArray(value)) return value.length > 0;
+    return value !== undefined && value !== null && value !== "";
   });
 
-  if (selectedFiles.length > 0) {
-    setStatus(`已选择 ${selectedFiles.length} 个文件。`);
+  if (visibleEntries.length === 0) {
+    appendEmpty(node, "没有收集到可展示的信息。");
+    return;
   }
+
+  visibleEntries.forEach(([label, value]) => {
+    const row = document.createElement("div");
+    row.className = "kvRow";
+
+    const key = document.createElement("dt");
+    key.textContent = label;
+
+    const val = document.createElement("dd");
+    val.textContent = Array.isArray(value) ? value.join("\n") : String(value);
+
+    row.append(key, val);
+    node.append(row);
+  });
 }
 
-function setFiles(files) {
-  selectedFiles = Array.from(files);
-  renderFiles();
+function renderDns(data) {
+  renderKeyValues(dnsRecords, [
+    ["A", data.a],
+    ["AAAA", data.aaaa],
+    ["CNAME", data.cname],
+    ["MX", data.mx],
+    ["NS", data.ns],
+    ["TXT", data.txt]
+  ]);
 }
 
-chooseButton.addEventListener("click", () => fileInput.click());
+function renderHttp(records) {
+  clearNode(httpRecords);
 
-fileInput.addEventListener("change", (event) => {
-  setFiles(event.target.files);
-});
+  records.forEach((record) => {
+    const item = document.createElement("div");
+    item.className = "httpItem";
 
-["dragenter", "dragover"].forEach((eventName) => {
-  form.addEventListener(eventName, (event) => {
-    event.preventDefault();
-    form.classList.add("isDragging");
-  });
-});
+    const title = document.createElement("strong");
+    title.textContent = record.url;
 
-["dragleave", "drop"].forEach((eventName) => {
-  form.addEventListener(eventName, (event) => {
-    event.preventDefault();
-    form.classList.remove("isDragging");
-  });
-});
+    const status = document.createElement("p");
+    status.textContent = record.ok
+      ? `${record.statusCode} ${record.statusMessage || ""}`.trim()
+      : record.error;
 
-form.addEventListener("drop", (event) => {
-  setFiles(event.dataTransfer.files);
-});
+    item.append(title, status);
 
-uploadButton.addEventListener("click", async () => {
-  if (selectedFiles.length === 0) return;
-
-  const data = new FormData();
-  selectedFiles.forEach((file) => data.append("files", file));
-
-  uploadButton.disabled = true;
-  setStatus("正在上传...");
-
-  try {
-    const response = await fetch("/upload", {
-      method: "POST",
-      body: data
-    });
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || "上传失败。");
+    if (record.headers && Object.keys(record.headers).length > 0) {
+      const list = document.createElement("dl");
+      list.className = "miniList";
+      Object.entries(record.headers).forEach(([name, value]) => {
+        const key = document.createElement("dt");
+        key.textContent = name;
+        const val = document.createElement("dd");
+        val.textContent = value;
+        list.append(key, val);
+      });
+      item.append(list);
     }
 
-    fileInput.value = "";
-    selectedFiles = [];
-    renderFiles();
-    setStatus(`上传成功：${result.files.length} 个文件已保存。`, "success");
+    httpRecords.append(item);
+  });
+}
+
+function renderTls(data) {
+  if (!data.ok) {
+    renderKeyValues(tlsRecord, [["错误", data.error]]);
+    return;
+  }
+
+  renderKeyValues(tlsRecord, [
+    ["主体", Object.entries(data.subject || {}).map(([key, value]) => `${key}: ${value}`)],
+    ["签发者", Object.entries(data.issuer || {}).map(([key, value]) => `${key}: ${value}`)],
+    ["生效时间", data.validFrom],
+    ["过期时间", data.validTo],
+    ["备用名称", data.subjectAltName]
+  ]);
+}
+
+function renderPorts(records) {
+  clearNode(portRecords);
+
+  records.forEach((record) => {
+    const item = document.createElement("div");
+    item.className = `port ${record.open ? "open" : "closed"}`;
+    item.innerHTML = `
+      <span>${record.port}</span>
+      <strong>${record.open ? "开放" : "未开放"}</strong>
+      <small>${record.open ? `${record.latencyMs} ms` : record.error || ""}</small>
+    `;
+    portRecords.append(item);
+  });
+}
+
+function renderResults(data) {
+  resultTarget.textContent = data.target;
+  collectedAt.textContent = new Date(data.collectedAt).toLocaleString();
+  renderDns(data.dns);
+  renderHttp(data.http);
+  renderTls(data.tls);
+  renderPorts(data.ports);
+  results.hidden = false;
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const params = new URLSearchParams({
+    target: targetInput.value,
+    ports: portsInput.value
+  });
+
+  collectButton.disabled = true;
+  setStatus("正在收集信息...");
+
+  try {
+    const response = await fetch(`/api/collect?${params.toString()}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "收集失败。");
+    }
+
+    renderResults(data);
+    setStatus(`完成。端口检查最多 ${data.limits.maxPorts} 个，超出的端口会被自动忽略。`, "success");
   } catch (error) {
-    uploadButton.disabled = false;
     setStatus(error.message, "error");
+  } finally {
+    collectButton.disabled = false;
   }
 });

@@ -1,27 +1,28 @@
-# New Project 2
+# Domain Intel Collector
 
-一个本地文件上传示例项目，同时保存 Web 安全学习笔记。
+一个本地运行的授权信息收集面板，用来整理域名、IP、端口和网站基础信息。
 
-## 项目内容
+## 功能
 
-- `server.js`：Node.js 本地文件上传服务。
-- `public/`：前端页面资源。
-- `docs/dvwa-burp-sqli-notes.md`：DVWA + Burp Suite SQL 注入学习笔记整理版。
+- DNS 记录：A、AAAA、CNAME、MX、NS、TXT
+- 网站响应：HTTP/HTTPS 状态码与常见响应头
+- TLS 证书：主体、签发者、有效期、备用名称
+- 端口检查：默认检查少量常见端口，也可输入最多 12 个自定义端口
 
-## 本地运行
+## 使用
 
 ```bash
 npm start
 ```
 
-默认访问地址：
+打开 `http://localhost:3000`，输入已授权测试的域名或 URL。
 
-```text
-http://localhost:3000
-```
-
-## 学习笔记
+## 学习资料
 
 - [DVWA + Burp Suite SQL 注入学习笔记](docs/dvwa-burp-sqli-notes.md)
 
-笔记内容仅适用于本地 DVWA、靶场或明确授权环境。不要对未授权网站进行扫描、测试、爆破或漏洞利用。
+## 注意
+
+这个工具用于合法授权范围内的资产梳理。端口检查默认设置了数量和超时限制，不适合大规模扫描。
+
+学习笔记内容仅适用于本地 DVWA、靶场或明确授权环境。不要对未授权网站进行扫描、测试、爆破或漏洞利用。
