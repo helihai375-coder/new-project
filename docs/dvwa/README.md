@@ -6,6 +6,7 @@
 
 - [第一阶段：Burp Suite + SQL 注入](dvwa-burp-sqli-notes.md)
 - [第二阶段：XSS / 命令注入 / 文件上传 / 文件包含 / CSRF](dvwa-second-stage-notes.md)
+- [第三阶段：Brute Force / SQL 盲注 / 弱会话 / JavaScript / CSP / CAPTCHA](dvwa-third-stage-module-methods.md)
 
 ## 安全边界
 
