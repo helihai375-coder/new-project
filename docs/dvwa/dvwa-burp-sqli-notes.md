@@ -30,6 +30,13 @@
 搭建环境 -> 配置代理 -> 抓取请求 -> 建立基准响应 -> 输入 Payload -> 对比响应 -> 形成证据链
 ```
 
+## 模块速查表
+
+| 模块 | 作用位置 | 简介 | 关键参数 | 测试方法 | 成功判断 | 典型现象 |
+| --- | --- | --- | --- | --- | --- | --- |
+| SQL Injection | 数据库查询参数 | 后端把用户输入拼接进 SQL 查询，导致查询逻辑被改变 | `id`, `Submit` | 用正常值建立基准，再测试报错、布尔条件、字段数和 `UNION` 回显 | 响应随真假条件变化，`UNION` 数据可回显 | `1'` 报 SQL 错误，永真条件返回多用户，`order by 3` 报错，`database()` 可回显 |
+| Burp Suite 抓包 | 浏览器到 DVWA 的 HTTP 请求 | 用代理观察、修改和重放请求 | 请求路径、查询参数、Cookie | 使用 Burp Browser 访问 DVWA，在 HTTP history / Repeater 中观察请求 | 能看到 DVWA 登录和 SQLi 请求，并可重放修改 | `GET /vulnerabilities/sqli/?id=1&Submit=Submit` 出现在 Burp 中 |
+
 ## 环境搭建
 
 ### 运行 DVWA

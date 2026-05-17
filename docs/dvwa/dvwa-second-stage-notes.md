@@ -28,6 +28,18 @@
 正常功能测试 -> 输入特殊内容 -> 观察页面响应 -> 判断漏洞是否成立 -> 理解风险影响
 ```
 
+## 模块速查表
+
+| 模块 | 作用位置 | 简介 | 关键参数 | 测试方法 | 成功判断 | 典型现象 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Reflected XSS | URL 参数回显位置 | 输入通过请求传给服务器后立即反射到页面 | `name` | 输入普通文本、HTML 标签、`script` 和事件型 Payload | 浏览器执行输入中的脚本 | `alert(1)` 弹窗，`document.domain` 显示 `127.0.0.1` |
+| Stored XSS | 留言保存和展示位置 | Payload 被保存到后端，其他用户访问页面时触发 | `txtName`, `mtxMessage` | 提交普通留言，再提交脚本内容并刷新页面 | 刷新后仍然自动触发脚本 | Guestbook 中保存的 `<script>alert(1)</script>` 持续弹窗 |
+| DOM XSS | 前端 JavaScript 写入 DOM 的位置 | 前端读取 URL 参数并写入页面，写入不安全会执行脚本 | `default` | 修改 `default` 参数，测试闭合标签和脚本注入 | 参数在浏览器端被解析执行 | `English</option></select><script>alert(1)</script>` 触发弹窗 |
+| Command Injection | 系统命令拼接位置 | 用户输入被拼接进系统命令，导致额外命令执行 | `ip`, `Submit` | 输入正常 IP，再拼接 `; whoami`、`&& whoami` 等 | 页面输出额外命令结果 | 出现 `www-data`、`uid=`、`/var/www/html` |
+| File Upload | 上传接口和上传目录 | 文件类型、内容或执行权限限制不严格 | `uploaded`, `Upload` | 上传 JPG、TXT、HTML、PHP 并访问上传路径 | 上传脚本可被服务器执行 | 访问 `test.php` 显示 `PHP upload test success` |
+| File Inclusion / LFI | 文件加载参数 | 用户可控制服务器加载的文件路径 | `page` | 正常加载 `file1.php`，再测试目录穿越读取本地文件 | 页面显示服务器本地文件内容 | `../../../../../../etc/passwd` 显示系统用户内容 |
+| CSRF | 已登录状态下的敏感操作 | 借用用户已登录 Cookie 触发敏感操作 | `password_new`, `password_conf`, `Change` | 观察改密 URL，构造链接直接访问 | 不经二次确认即可修改密码 | 访问构造链接后可用新密码登录 |
+
 ## Reflected XSS 反射型 XSS
 
 模块位置：
