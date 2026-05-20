@@ -72,10 +72,13 @@ Python 入门基础已经完成第一轮实践，正在进入“函数封装 + �
 
 **用户输入：**
 
+```text
 85,90,72,60,45,100,88
+```
 
 **程序输出：**
 
+```text
 总人数：7
 最高分：100
 最低分：45
@@ -83,26 +86,35 @@ Python 入门基础已经完成第一轮实践，正在进入“函数封装 + �
 及格人数：6
 不及格人数：1
 优秀人数：3
+```
 
 
 如果用户输入：
 
+```text
 85,abc,90
+```
 
 **程序提示：**
 
+```text
 输入错误：请只输入数字，并用英文逗号分隔
 请重新输入。
+```
 
 
 如果用户输入：
 
+```text
 85,120,90
+```
 
 **程序提示：**
 
+```text
 输入错误：成绩必须在 0 到 100 之间
 请重新输入。
+```
 
 
 ---
@@ -117,11 +129,15 @@ Python 入门基础已经完成第一轮实践，正在进入“函数封装 + �
 
 **示例：**
 
+```python
 chenji = "85,90,72,60,45,100,88"
+```
 
 **今天的用法：**
 
+```python
 user_input = input("请输入成绩，用英文逗号分隔：")
+```
 
 注意：
 
@@ -142,11 +158,15 @@ input() 得到的一定是字符串。
 
 **示例：**
 
+```python
 score = 85
+```
 
 **今天的用法：**
 
+```python
 int("85")
+```
 
 作用：
 
@@ -159,19 +179,27 @@ int("85")
 
 **示例：**
 
+```python
 scores = [85, 90, 72, 60]
+```
 
 **今天的用法：**
 
+```python
 s = [85, 90, 72, 60, 45, 100, 88]
+```
 
 取列表里的数据：
 
+```python
 print(s[0])
+```
 
 输出：
 
+```text
 85
+```
 
 注意：
 
@@ -184,21 +212,28 @@ print(s[0])
 
 **示例：**
 
+```python
 data = {
     "平均分": 77.14,
     "最高分": 100
 }
+```
 
 取字典里的数据：
 
+```python
 print(data["平均分"])
+```
 
 输出：
 
+```text
 77.14
+```
 
 **今天的用法：**
 
+```python
 result = {
     "success": True,
     "总人数": len(s),
@@ -206,6 +241,7 @@ result = {
     "最低分": min(s),
     "平均分": round(sum(s) / len(s), 2)
 }
+```
 
 
 #### 1.5 布尔值 bool
@@ -217,7 +253,9 @@ False
 
 **今天的用法：**
 
+```python
 "success": True
+```
 
 表示处理成功。
 
@@ -227,10 +265,12 @@ False
 
 判断时可以这样写：
 
+```python
 if data["success"]:
     print("成功")
 else:
     print("失败")
+```
 
 
 ---
@@ -241,11 +281,15 @@ else:
 
 格式：
 
+```python
 变量 = input("提示文字：")
+```
 
 **今天的用法：**
 
+```python
 user_input = input("请输入成绩，用英文逗号分隔：")
+```
 
 作用：
 
@@ -256,11 +300,15 @@ user_input = input("请输入成绩，用英文逗号分隔：")
 
 格式：
 
+```python
 print("你好")
+```
 
 **今天的用法：**
 
+```python
 print("请重新输入。")
+```
 
 输出变量：
 
@@ -273,7 +321,9 @@ print(data)
 
 **示例：**
 
+```python
 print("及格人数：" + str(jige))
+```
 
 如果不加 str()，可能会报错。
 
@@ -282,23 +332,29 @@ print("及格人数：" + str(jige))
 
 格式：
 
+```python
 print(f"结果是：{变量}")
+```
 
 **示例：**
 
+```python
 name = "小明"
 age = 18
+```
 
 print(f"姓名：{name}，年龄：{age}")
 
 **今天的用法：**
 
+```python
 print(f"""
 总人数：{data["总人数"]}
 最高分：{data["最高分"]}
 最低分：{data["最低分"]}
 平均分：{data["平均分"]}
 """)
+```
 
 作用：
 
@@ -313,11 +369,15 @@ print(f"""
 
 **示例：**
 
+```python
 num = int("85")
+```
 
 **今天的用法：**
 
+```python
 s.append(int(i))
+```
 
 或者：
 
@@ -332,11 +392,15 @@ s = [int(i) for i in chenji.split(',')]
 
 **示例：**
 
+```python
 text = str(85)
+```
 
 **今天的用法：**
 
+```python
 print("最高分为：" + str(max(s)))
+```
 
 作用：
 
@@ -351,15 +415,21 @@ print("最高分为：" + str(max(s)))
 
 格式：
 
+```python
 字符串.split("分隔符")
+```
 
 **今天的用法：**
 
+```python
 chenji.split(',')
+```
 
 **示例：**
 
+```python
 "85,90,72".split(',')
+```
 
 结果：
 
@@ -387,7 +457,9 @@ s = []
 
 **示例：**
 
+```python
 s.append(85)
+```
 
 今天的基础写法：
 
@@ -409,7 +481,9 @@ for i in lchenji:
 
 **今天的用法：**
 
+```python
 s = [int(i) for i in chenji.split(',')]
+```
 
 等价于：
 
@@ -423,11 +497,15 @@ for i in chenji.split(','):
 
 格式：
 
+```python
 [变量 for 变量 in 列表 if 条件]
+```
 
 **今天的用法：**
 
+```python
 [i for i in s if i >= 60]
+```
 
 意思是：
 
@@ -460,7 +538,9 @@ len(s)
 
 **今天的用法：**
 
+```python
 "总人数": len(s)
+```
 
 
 #### 6.2 最大值 max()
@@ -469,7 +549,9 @@ max(s)
 
 **今天的用法：**
 
+```python
 "最高分": max(s)
+```
 
 
 #### 6.3 最小值 min()
@@ -478,7 +560,9 @@ min(s)
 
 **今天的用法：**
 
+```python
 "最低分": min(s)
+```
 
 
 #### 6.4 求和 sum()
@@ -487,7 +571,9 @@ sum(s)
 
 **今天的用法：**
 
+```python
 sum(s) / len(s)
+```
 
 作用：
 
@@ -498,11 +584,15 @@ sum(s) / len(s)
 
 格式：
 
+```python
 round(数字, 小数位数)
+```
 
 **今天的用法：**
 
+```python
 round(sum(s) / len(s), 2)
+```
 
 作用：
 
@@ -513,11 +603,15 @@ round(sum(s) / len(s), 2)
 
 格式：
 
+```python
 any(条件 for 变量 in 列表)
+```
 
 **今天的用法：**
 
+```python
 any(i < 0 or i > 100 for i in s)
+```
 
 意思是：
 
@@ -532,30 +626,38 @@ any(i < 0 or i > 100 for i in s)
 
 格式：
 
+```python
 if 条件:
     条件成立时执行
+```
 
 **今天的用法：**
 
+```python
 if i >= 60:
     jige = jige + 1
+```
 
 
 #### 7.2 if...else 判断
 
 格式：
 
+```python
 if 条件:
     条件成立时执行
 else:
     条件不成立时执行
+```
 
 **今天的用法：**
 
+```python
 if data["success"]:
     return data
 else:
     print(data["message"])
+```
 
 
 #### 7.3 多个 if 判断
@@ -582,8 +684,10 @@ if i < 60:
 
 **示例：**
 
+```python
 if i < 0 or i > 100:
     print("成绩不合法")
+```
 
 今天升级后的写法：
 
@@ -602,14 +706,18 @@ if any(i < 0 or i > 100 for i in s):
 
 格式：
 
+```python
 for 变量 in 列表:
     执行代码
+```
 
 **今天的用法：**
 
+```python
 for i in s:
     if i >= 60:
         jige += 1
+```
 
 意思是：
 
@@ -620,13 +728,17 @@ for i in s:
 
 格式：
 
+```python
 while 条件:
     循环执行的代码
+```
 
 **今天的用法：**
 
+```python
 while True:
     user_input = input("请输入成绩，用英文逗号分隔：")
+```
 
 意思是：
 
@@ -639,10 +751,12 @@ break
 
 **示例：**
 
+```python
 while True:
     text = input("请输入：")
     if text == "q":
         break
+```
 
 注意：
 
@@ -657,13 +771,17 @@ while True:
 
 格式：
 
+```python
 def 函数名(参数):
     函数内容
+```
 
 **今天的用法：**
 
+```python
 def scores(chenji):
     ...
+```
 
 意思是：
 
@@ -674,22 +792,30 @@ def scores(chenji):
 
 格式：
 
+```python
 函数名(传入的数据)
+```
 
 **今天的用法：**
 
+```python
 scores("85,90,72")
+```
 
 
 #### 9.3 接收函数返回值
 
 格式：
 
+```python
 变量 = 函数名(参数)
+```
 
 **今天的用法：**
 
+```python
 data = scores("85,90,72")
+```
 
 意思是：
 
@@ -700,11 +826,15 @@ scores 函数执行完后，把 return 的结果交给 data。
 
 格式：
 
+```python
 return 结果
+```
 
 **今天的用法：**
 
+```python
 return result
+```
 
 或者：
 
@@ -722,10 +852,12 @@ return {
 
 **今天的用法：**
 
+```python
 def input_scores():
     while True:
         user_input = input("请输入成绩，用英文逗号分隔：")
         data = scores(user_input)
+```
 
         if data["success"]:
             return data
@@ -758,7 +890,9 @@ data["平均分"]
 
 **今天的用法：**
 
+```python
 print(data["平均分"])
+```
 
 
 #### 10.3 用字典控制程序流程
@@ -779,13 +913,16 @@ else:
 
 格式：
 
+```python
 try:
     可能出错的代码
 except 错误类型:
     出错后执行的代码
+```
 
 **今天的用法：**
 
+```python
 try:
     s = [int(i) for i in chenji.split(',')]
 except ValueError:
@@ -793,6 +930,7 @@ except ValueError:
         "success": False,
         "message": "输入错误：请只输入数字，并用英文逗号分隔"
     }
+```
 
 意思是：
 
@@ -843,6 +981,7 @@ i < 0 or i > 100
 
 ## 四、今日完整代码
 
+```python
 def scores(chenji):
     try:
         s = [int(i) for i in chenji.split(',')]
@@ -893,6 +1032,7 @@ print(f"""
 不及格人数：{data["不及格人数"]}
 优秀人数：{data["优秀人数"]}
 """)
+```
 
 
 ---
@@ -903,7 +1043,9 @@ print(f"""
 
 用户输入一串成绩，例如：
 
+```text
 85,90,72,60,45,100,88
+```
 
 此时它是字符串。
 
@@ -912,14 +1054,18 @@ print(f"""
 
 使用 split(',') 把字符串拆成列表：
 
+```python
 ["85", "90", "72", "60", "45", "100", "88"]
+```
 
 
 ### 3. 类型转换
 
 使用 int(i) 把每个字符串成绩转成整数：
 
+```python
 [85, 90, 72, 60, 45, 100, 88]
+```
 
 
 ### 4. 检查输入是否合法
@@ -937,50 +1083,68 @@ print(f"""
 
 总人数：
 
+```python
 len(s)
+```
 
 最高分：
 
+```python
 max(s)
+```
 
 最低分：
 
+```python
 min(s)
+```
 
 平均分：
 
+```python
 round(sum(s) / len(s), 2)
+```
 
 及格人数：
 
+```python
 len([i for i in s if i >= 60])
+```
 
 不及格人数：
 
+```python
 len([i for i in s if i < 60])
+```
 
 优秀人数：
 
+```python
 len([i for i in s if i >= 85])
+```
 
 
 ### 6. 返回结果
 
 **如果成功，返回：**
 
+```python
 {
     "success": True,
     "总人数": ...,
     "最高分": ...,
     "平均分": ...
 }
+```
 
 **如果失败，返回：**
 
+```python
 {
     "success": False,
     "message": "错误提示"
 }
+```
 
 
 ### 7. 重新输入机制
@@ -989,7 +1153,9 @@ input_scores() 使用 while True 反复输入。
 
 如果 data["success"] 是 True：
 
+```python
 return data
+```
 
 如果 data["success"] 是 False：
 
@@ -1019,11 +1185,15 @@ return data
 
 **错误写法：**
 
+```python
 result = {"平均分", 77.14}
+```
 
 **正确写法：**
 
+```python
 result = {"平均分": 77.14}
+```
 
 
 ### 3. TypeError: string indices must be integers, not 'str'
@@ -1034,8 +1204,10 @@ result = {"平均分": 77.14}
 
 **错误场景：**
 
+```python
 data = "输入错误"
 print(data["平均分"])
+```
 
 **解决：**
 
