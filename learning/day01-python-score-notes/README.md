@@ -16,7 +16,6 @@
 - `score_statistics.py`：命令行成绩统计器练习代码。
 - `baseline_response_from_image.txt`：根据上传图片转写的基准响应内容。
 - `python_score_notes_reorganized.md`：第一天学习笔记 Markdown 版本。
-- `python_score_notes_reorganized.txt`：第一天学习笔记原文备份。
 
 ## 程序功能
 
