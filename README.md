@@ -19,7 +19,7 @@ npm start
 
 ## 学习资料
 
-- [DVWA + Burp Suite SQL 注入学习笔记](docs/dvwa-burp-sqli-notes.md)
+- [DVWA 学习笔记目录](docs/dvwa/README.md)
 - [Kali 信息收集脚本代码整理](docs/kali-info-collection-scripts.md)
 - [Kali Recon 脚本目录](tools/kali-recon/README.md)
 
