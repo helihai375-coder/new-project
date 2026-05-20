@@ -1,0 +1,7 @@
+正常结果只返回 ID 为 1 的用户，例如：
+
+ID: 1
+First name: admin
+Surname: admin
+
+说明：这个正常结果是后续测试的基准响应，用来对比 Payload 触发后的页面差异。
